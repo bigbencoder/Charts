@@ -159,6 +159,9 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider
             setNeedsDisplay()
         }
     }
+
+	/// if set to true, draw the bar and shadow as rounded corner
+	open var roundedBarEnabled: Bool = false
     
     /// Adds half of the bar width to each side of the x-axis range in order to allow the bars of the barchart to be fully displayed.
     /// **default**: false
@@ -180,4 +183,7 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider
     
     /// - returns: `true` if drawing shadows (maxvalue) for each bar is enabled, `false` ifnot
     open var isDrawBarShadowEnabled: Bool { return drawBarShadowEnabled }
+
+	/// - returns: `true` if drawing rounded corner for each bar is enabled, `false` ifnot
+	open var isRoundedBarEnabled: Bool { return roundedBarEnabled }
 }

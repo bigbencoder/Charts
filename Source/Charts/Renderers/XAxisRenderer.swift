@@ -148,15 +148,17 @@ open class XAxisRenderer: AxisRendererBase
         {
             context.setLineDash(phase: 0.0, lengths: [])
         }
+
+		let yOffset = xAxis.axisLineYOffset
         
         if xAxis.labelPosition == .top
             || xAxis.labelPosition == .topInside
             || xAxis.labelPosition == .bothSided
         {
             _axisLineSegmentsBuffer[0].x = viewPortHandler.contentLeft
-            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentTop
+            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentTop - yOffset
             _axisLineSegmentsBuffer[1].x = viewPortHandler.contentRight
-            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentTop
+            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentTop - yOffset
             context.strokeLineSegments(between: _axisLineSegmentsBuffer)
         }
         
@@ -165,9 +167,9 @@ open class XAxisRenderer: AxisRendererBase
             || xAxis.labelPosition == .bothSided
         {
             _axisLineSegmentsBuffer[0].x = viewPortHandler.contentLeft
-            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentBottom
+            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentBottom + yOffset
             _axisLineSegmentsBuffer[1].x = viewPortHandler.contentRight
-            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentBottom
+            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentBottom + yOffset
             context.strokeLineSegments(between: _axisLineSegmentsBuffer)
         }
         

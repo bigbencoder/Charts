@@ -261,7 +261,14 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 _barShadowRectBuffer.size.height = viewPortHandler.contentHeight
                 
                 context.setFillColor(dataSet.barShadowColor.cgColor)
-                context.fill(_barShadowRectBuffer)
+
+				if dataProvider.isRoundedBarEnabled {
+					let bezierPath = UIBezierPath(roundedRect: _barShadowRectBuffer, cornerRadius: _barShadowRectBuffer.size.width/2)
+					context.addPath(bezierPath.cgPath)
+					context.drawPath(using: .fill)
+				} else {
+					context.fill(_barShadowRectBuffer)
+				}
             }
         }
         
@@ -316,7 +323,13 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 context.setFillColor(dataSet.color(atIndex: j).cgColor)
             }
             
-            context.fill(barRect)
+			if dataProvider.isRoundedBarEnabled {
+				let bezierPath = UIBezierPath(roundedRect: barRect, cornerRadius: barRect.size.width/2)
+				context.addPath(bezierPath.cgPath)
+				context.drawPath(using: .fill)
+			} else {
+				context.fill(barRect)
+			}
             
             if drawBorder
             {
@@ -685,7 +698,13 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 
                 setHighlightDrawPos(highlight: high, barRect: barRect)
                 
-                context.fill(barRect)
+				if dataProvider.isRoundedBarEnabled {
+					let bezierPath = UIBezierPath(roundedRect: barRect, cornerRadius: barRect.size.width/2)
+					context.addPath(bezierPath.cgPath)
+					context.drawPath(using: .fill)
+				} else {
+					context.fill(barRect)
+				}
             }
         }
         

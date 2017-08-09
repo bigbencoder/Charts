@@ -21,6 +21,9 @@ open class CombinedChartRenderer: DataRenderer
     
     /// if set to true, a grey area is drawn behind each bar that indicates the maximum value
     open var drawBarShadowEnabled = false
+
+	/// if set to true, draw the bar and shadow as rounded corner
+	open var roundedBarEnabled = false
     
     internal var _renderers = [DataRenderer]()
     

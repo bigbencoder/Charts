@@ -374,4 +374,7 @@ open class AxisBase: ComponentBase
         // actual range
         axisRange = abs(max - min)
     }
+
+	/// Y Offset for X-Axis line
+	open var axisLineYOffset: CGFloat = CGFloat(0)
 }
