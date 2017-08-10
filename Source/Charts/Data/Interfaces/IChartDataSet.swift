@@ -244,6 +244,9 @@ public protocol IChartDataSet
     
     /// Returns true if y-icon drawing is enabled, false if not
     var isDrawIconsEnabled: Bool { get }
+
+	/// Set this to true to draw y-icons on the bottom
+	var drawIconsBottom: Bool { get set }
     
     /// Offset of icons drawn on the chart.
     ///

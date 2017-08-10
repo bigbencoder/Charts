@@ -367,6 +367,9 @@ open class ChartBaseDataSet: NSObject, IChartDataSet
     ///
     /// - note: For bar and line charts: if `maxVisibleCount` is reached, no icons will be drawn even if this is enabled.
     open var drawIconsEnabled = true
+
+	/// Set this to true to draw y-icons on the bottom.
+	open var drawIconsBottom = false
     
     /// Returns true if y-icon drawing is enabled, false if not
     open var isDrawIconsEnabled: Bool

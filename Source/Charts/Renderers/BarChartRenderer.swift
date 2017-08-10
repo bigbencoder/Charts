@@ -463,6 +463,10 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                             var py = val >= 0.0
                                 ? (rect.origin.y + posOffset)
                                 : (rect.origin.y + rect.size.height + negOffset)
+
+							if dataSet.drawIconsBottom {
+								py = (rect.origin.y + rect.size.height + negOffset)
+							}
                             
                             px += iconsOffset.x
                             py += iconsOffset.y
