@@ -20,7 +20,7 @@ open class CombinedChartRenderer: DataRenderer
     @objc open var drawValueAboveBarEnabled = true
     
     /// if set to true, a grey area is drawn behind each bar that indicates the maximum value
-    @objcopen var drawBarShadowEnabled = false
+    @objc open var drawBarShadowEnabled = false
 
 	/// if set to true, draw the bar and shadow as rounded corner
 	@objc open var roundedBarEnabled = false
