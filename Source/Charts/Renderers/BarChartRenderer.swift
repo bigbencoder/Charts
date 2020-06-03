@@ -217,6 +217,26 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         
         prepareBuffer(dataSet: dataSet, index: index)
         trans.rectValuesToPixel(&_buffers[index].rects)
+		
+		if dataSet.minimumHeightEqualsBarWidth {
+			for i in 0 ..< _buffers[index].rects.count {
+				let rect = _buffers[index].rects[i]
+				if rect.height < rect.width {
+					let adjustedRect = CGRect(x: rect.origin.x, y: rect.origin.y - (rect.width - rect.height), width: rect.width, height: rect.width)
+					_buffers[index].rects[i] = adjustedRect
+				}
+			}
+		}
+		
+		if dataSet.minimumBarHeight > 0.0 {
+			for i in 0 ..< _buffers[index].rects.count {
+				let rect = _buffers[index].rects[i]
+				if rect.height < dataSet.minimumBarHeight && rect.height > 0.0 {
+					let adjustedRect = CGRect(x: rect.origin.x, y: rect.origin.y - (dataSet.minimumBarHeight - rect.height), width: rect.width, height: dataSet.minimumBarHeight)
+					_buffers[index].rects[i] = adjustedRect
+				}
+			}
+		}
         
         let borderWidth = dataSet.barBorderWidth
         let borderColor = dataSet.barBorderColor
@@ -377,7 +397,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
             
             var dataSets = barData.dataSets
 
-            let valueOffsetPlus: CGFloat = 4.5
+            let valueOffsetPlus: CGFloat = 8.5
             var posOffset: CGFloat
             var negOffset: CGFloat
             let drawValueAboveBar = dataProvider.isDrawValueAboveBarEnabled
@@ -437,7 +457,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                             continue
                         }
                         
-                        let val = e.y
+                        let val = e.displayY ?? e.y
                         
                         if dataSet.isDrawValuesEnabled
                         {
@@ -634,7 +654,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     /// Draws a value at the specified x and y position.
     open func drawValue(context: CGContext, value: String, xPos: CGFloat, yPos: CGFloat, font: NSUIFont, align: NSTextAlignment, color: NSUIColor)
     {
-        ChartUtils.drawText(context: context, text: value, point: CGPoint(x: xPos, y: yPos), align: align, attributes: [NSFontAttributeName: font, NSForegroundColorAttributeName: color])
+        ChartUtils.drawText(context: context, text: value, point: CGPoint(x: xPos, y: yPos), align: align, attributes: [convertFromNSAttributedStringKey(NSAttributedString.Key.font): font, convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): color])
     }
     
     open override func drawExtras(context: CGContext)
@@ -720,4 +740,9 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     {
         high.setDraw(x: barRect.midX, y: barRect.origin.y)
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
 }

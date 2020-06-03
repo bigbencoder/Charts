@@ -228,14 +228,15 @@ open class AxisBase: ComponentBase
         {
             _labelCount = newValue
             
-            if _labelCount > 25
-            {
-                _labelCount = 25
-            }
-            if _labelCount < 2
-            {
-                _labelCount = 2
-            }
+            // Remove label limits
+//            if _labelCount > 25
+//            {
+//                _labelCount = 25
+//            }
+//            if _labelCount < 2
+//            {
+//                _labelCount = 2
+//            }
             
             forceLabelsEnabled = false
         }

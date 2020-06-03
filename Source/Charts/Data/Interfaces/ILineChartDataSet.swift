@@ -67,6 +67,12 @@ public protocol ILineChartDataSet: ILineRadarChartDataSet
     /// - returns: `true` if drawing circles for this DataSet is enabled, `false` ifnot
     var isDrawCirclesEnabled: Bool { get }
     
+    /// If true, drawing last circle is enabled
+    var drawLastCircleEnabled: Bool { get set }
+    
+    /// - returns: `true` if drawing last circle for this DataSet is enabled, `false` ifnot
+    var isDrawLastCircleEnabled: Bool { get }
+    
     /// The color of the inner circle (the circle-hole).
     var circleHoleColor: NSUIColor? { get set }
     

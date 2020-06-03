@@ -15,6 +15,9 @@ open class ChartDataEntryBase: NSObject
 {
     /// the y value
     open var y = Double(0.0)
+	
+	/// the display y value // if different than y value
+	open var displayY: Double?
     
     /// optional spot for additional data this Entry represents
     open var data: AnyObject?

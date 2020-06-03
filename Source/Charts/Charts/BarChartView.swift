@@ -153,9 +153,7 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider
     open var drawBarShadowEnabled: Bool
     {
         get { return _drawBarShadowEnabled }
-        set
-        {
-            _drawBarShadowEnabled = newValue
+        set {_drawBarShadowEnabled = newValue
             setNeedsDisplay()
         }
     }
