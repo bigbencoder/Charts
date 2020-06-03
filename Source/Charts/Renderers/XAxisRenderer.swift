@@ -19,7 +19,7 @@ import CoreGraphics
 @objc(ChartXAxisRenderer)
 open class XAxisRenderer: AxisRendererBase
 {
-    @objc public init(viewPortHandler: ViewPortHandler?, xAxis: XAxis?, transformer: Transformer?)
+    public init(viewPortHandler: ViewPortHandler?, xAxis: XAxis?, transformer: Transformer?)
     {
         super.init(viewPortHandler: viewPortHandler, transformer: transformer, axis: xAxis)
     }
@@ -64,7 +64,7 @@ open class XAxisRenderer: AxisRendererBase
         computeSize()
     }
     
-    @objc open func computeSize()
+    open func computeSize()
     {
         guard let
             xAxis = self.axis as? XAxis
@@ -72,7 +72,7 @@ open class XAxisRenderer: AxisRendererBase
         
         let longest = xAxis.getLongestLabel()
         
-        let labelSize = longest.size(withAttributes: [NSAttributedStringKey.font: xAxis.labelFont])
+        let labelSize = longest.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font): xAxis.labelFont]))
         
         let labelWidth = labelSize.width
         let labelHeight = labelSize.height
@@ -148,15 +148,17 @@ open class XAxisRenderer: AxisRendererBase
         {
             context.setLineDash(phase: 0.0, lengths: [])
         }
+
+		let yOffset = xAxis.axisLineYOffset
         
         if xAxis.labelPosition == .top
             || xAxis.labelPosition == .topInside
             || xAxis.labelPosition == .bothSided
         {
             _axisLineSegmentsBuffer[0].x = viewPortHandler.contentLeft
-            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentTop
+            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentTop - yOffset
             _axisLineSegmentsBuffer[1].x = viewPortHandler.contentRight
-            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentTop
+            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentTop - yOffset
             context.strokeLineSegments(between: _axisLineSegmentsBuffer)
         }
         
@@ -165,9 +167,9 @@ open class XAxisRenderer: AxisRendererBase
             || xAxis.labelPosition == .bothSided
         {
             _axisLineSegmentsBuffer[0].x = viewPortHandler.contentLeft
-            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentBottom
+            _axisLineSegmentsBuffer[0].y = viewPortHandler.contentBottom + yOffset
             _axisLineSegmentsBuffer[1].x = viewPortHandler.contentRight
-            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentBottom
+            _axisLineSegmentsBuffer[1].y = viewPortHandler.contentBottom + yOffset
             context.strokeLineSegments(between: _axisLineSegmentsBuffer)
         }
         
@@ -175,7 +177,7 @@ open class XAxisRenderer: AxisRendererBase
     }
     
     /// draws the x-labels on the specified y-position
-    @objc open func drawLabels(context: CGContext, pos: CGFloat, anchor: CGPoint)
+    open func drawLabels(context: CGContext, pos: CGFloat, anchor: CGPoint)
     {
         guard
             let xAxis = self.axis as? XAxis,
@@ -184,15 +186,15 @@ open class XAxisRenderer: AxisRendererBase
             else { return }
         
         #if os(OSX)
-            let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+            let paraStyle = NSParagraphStyle.default().mutableCopy() as! NSMutableParagraphStyle
         #else
             let paraStyle = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
         #endif
         paraStyle.alignment = .center
         
-        let labelAttrs: [NSAttributedStringKey : Any] = [NSAttributedStringKey.font: xAxis.labelFont,
-            NSAttributedStringKey.foregroundColor: xAxis.labelTextColor,
-            NSAttributedStringKey.paragraphStyle: paraStyle]
+        let labelAttrs = [convertFromNSAttributedStringKey(NSAttributedString.Key.font): xAxis.labelFont,
+            convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): xAxis.labelTextColor,
+            convertFromNSAttributedStringKey(NSAttributedString.Key.paragraphStyle): paraStyle] as [String : NSObject]
         let labelRotationAngleRadians = xAxis.labelRotationAngle * ChartUtils.Math.FDEG2RAD
         
         let centeringEnabled = xAxis.isCenterAxisLabelsEnabled
@@ -235,7 +237,7 @@ open class XAxisRenderer: AxisRendererBase
                     // avoid clipping of the last
                     if i == xAxis.entryCount - 1 && xAxis.entryCount > 1
                     {
-                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: labelAttrs, context: nil).size.width
+                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: convertToOptionalNSAttributedStringKeyDictionary(labelAttrs), context: nil).size.width
                         
                         if width > viewPortHandler.offsetRight * 2.0
                             && position.x + width > viewPortHandler.chartWidth
@@ -245,7 +247,7 @@ open class XAxisRenderer: AxisRendererBase
                     }
                     else if i == 0
                     { // avoid clipping of the first
-                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: labelAttrs, context: nil).size.width
+                        let width = labelns.boundingRect(with: labelMaxSize, options: .usesLineFragmentOrigin, attributes: convertToOptionalNSAttributedStringKeyDictionary(labelAttrs), context: nil).size.width
                         position.x += width / 2.0
                     }
                 }
@@ -262,12 +264,12 @@ open class XAxisRenderer: AxisRendererBase
         }
     }
     
-    @objc open func drawLabel(
+    open func drawLabel(
         context: CGContext,
         formattedLabel: String,
         x: CGFloat,
         y: CGFloat,
-        attributes: [NSAttributedStringKey : Any],
+        attributes: [String: NSObject],
         constrainedToSize: CGSize,
         anchor: CGPoint,
         angleRadians: CGFloat)
@@ -328,7 +330,7 @@ open class XAxisRenderer: AxisRendererBase
         }
     }
     
-    @objc open var gridClippingRect: CGRect
+    open var gridClippingRect: CGRect
     {
         var contentRect = viewPortHandler?.contentRect ?? CGRect.zero
         let dx = self.axis?.gridLineWidth ?? 0.0
@@ -337,7 +339,7 @@ open class XAxisRenderer: AxisRendererBase
         return contentRect
     }
     
-    @objc open func drawGridLine(context: CGContext, x: CGFloat, y: CGFloat)
+    open func drawGridLine(context: CGContext, x: CGFloat, y: CGFloat)
     {
         guard
             let viewPortHandler = self.viewPortHandler
@@ -398,7 +400,7 @@ open class XAxisRenderer: AxisRendererBase
         }
     }
     
-    @objc open func renderLimitLineLine(context: CGContext, limitLine: ChartLimitLine, position: CGPoint)
+    open func renderLimitLineLine(context: CGContext, limitLine: ChartLimitLine, position: CGPoint)
     {
         guard
             let viewPortHandler = self.viewPortHandler
@@ -422,7 +424,7 @@ open class XAxisRenderer: AxisRendererBase
         context.strokePath()
     }
     
-    @objc open func renderLimitLineLabel(context: CGContext, limitLine: ChartLimitLine, position: CGPoint, yOffset: CGFloat)
+    open func renderLimitLineLabel(context: CGContext, limitLine: ChartLimitLine, position: CGPoint, yOffset: CGFloat)
     {
         guard
             let viewPortHandler = self.viewPortHandler
@@ -445,7 +447,7 @@ open class XAxisRenderer: AxisRendererBase
                         x: position.x + xOffset,
                         y: viewPortHandler.contentTop + yOffset),
                     align: .left,
-                    attributes: [NSAttributedStringKey.font: limitLine.valueFont, NSAttributedStringKey.foregroundColor: limitLine.valueTextColor])
+                    attributes: [convertFromNSAttributedStringKey(NSAttributedString.Key.font): limitLine.valueFont, convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): limitLine.valueTextColor])
             }
             else if limitLine.labelPosition == .rightBottom
             {
@@ -455,7 +457,7 @@ open class XAxisRenderer: AxisRendererBase
                         x: position.x + xOffset,
                         y: viewPortHandler.contentBottom - labelLineHeight - yOffset),
                     align: .left,
-                    attributes: [NSAttributedStringKey.font: limitLine.valueFont, NSAttributedStringKey.foregroundColor: limitLine.valueTextColor])
+                    attributes: [convertFromNSAttributedStringKey(NSAttributedString.Key.font): limitLine.valueFont, convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): limitLine.valueTextColor])
             }
             else if limitLine.labelPosition == .leftTop
             {
@@ -465,7 +467,7 @@ open class XAxisRenderer: AxisRendererBase
                         x: position.x - xOffset,
                         y: viewPortHandler.contentTop + yOffset),
                     align: .right,
-                    attributes: [NSAttributedStringKey.font: limitLine.valueFont, NSAttributedStringKey.foregroundColor: limitLine.valueTextColor])
+                    attributes: [convertFromNSAttributedStringKey(NSAttributedString.Key.font): limitLine.valueFont, convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): limitLine.valueTextColor])
             }
             else
             {
@@ -475,9 +477,20 @@ open class XAxisRenderer: AxisRendererBase
                         x: position.x - xOffset,
                         y: viewPortHandler.contentBottom - labelLineHeight - yOffset),
                     align: .right,
-                    attributes: [NSAttributedStringKey.font: limitLine.valueFont, NSAttributedStringKey.foregroundColor: limitLine.valueTextColor])
+                    attributes: [convertFromNSAttributedStringKey(NSAttributedString.Key.font): limitLine.valueFont, convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): limitLine.valueTextColor])
             }
         }
     }
 
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
 }

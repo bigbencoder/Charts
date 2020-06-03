@@ -123,27 +123,38 @@ open class ChartUtils
         NSUIGraphicsPopContext()
     }
     
-    open class func drawText(context: CGContext, text: String, point: CGPoint, align: NSTextAlignment, attributes: [NSAttributedStringKey : Any]?)
+    open class func drawText(context: CGContext, text: String, point: CGPoint, align: NSTextAlignment, attributes: [String : AnyObject]?)
     {
-        var point = point
-        
-        if align == .center
-        {
-            point.x -= text.size(withAttributes: attributes).width / 2.0
-        }
-        else if align == .right
-        {
-            point.x -= text.size(withAttributes: attributes).width
-        }
-        
-        NSUIGraphicsPushContext(context)
-        
-        (text as NSString).draw(at: point, withAttributes: attributes)
-        
-        NSUIGraphicsPopContext()
+		// the text may span multiple lines. Since the NSString.draw() function seems to ignore the paragaph attributes
+		// provided, we are unable to center each line individually in that way. Instead we much split the string in to separate lines
+		// and calculate the centering offset for each
+		
+		let lines = text.components(separatedBy: "\n")
+		var lineNum = 0
+		
+		NSUIGraphicsPushContext(context)
+		
+		for line in lines {
+			var drawPoint = point
+			let textSize = line.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
+			if align == .center
+			{
+				drawPoint.x -= textSize.width / 2.0
+			}
+			else if align == .right
+			{
+				drawPoint.x -= textSize.width
+			}
+			drawPoint.y = point.y + textSize.height * CGFloat(lineNum)
+			(line as NSString).draw(at: drawPoint, withAttributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
+			
+			lineNum = lineNum + 1
+		}
+		
+		NSUIGraphicsPopContext()
     }
     
-    open class func drawText(context: CGContext, text: String, point: CGPoint, attributes: [NSAttributedStringKey : Any]?, anchor: CGPoint, angleRadians: CGFloat)
+    open class func drawText(context: CGContext, text: String, point: CGPoint, attributes: [String : AnyObject]?, anchor: CGPoint, angleRadians: CGFloat)
     {
         var drawOffset = CGPoint()
         
@@ -151,7 +162,7 @@ open class ChartUtils
         
         if angleRadians != 0.0
         {
-            let size = text.size(withAttributes: attributes)
+            let size = text.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
             
             // Move the text drawing rect in a way that it always rotates around its center
             drawOffset.x = -size.width * 0.5
@@ -172,7 +183,7 @@ open class ChartUtils
             context.translateBy(x: translate.x, y: translate.y)
             context.rotate(by: angleRadians)
             
-            (text as NSString).draw(at: drawOffset, withAttributes: attributes)
+            (text as NSString).draw(at: drawOffset, withAttributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
             
             context.restoreGState()
         }
@@ -180,7 +191,7 @@ open class ChartUtils
         {
             if anchor.x != 0.0 || anchor.y != 0.0
             {
-                let size = text.size(withAttributes: attributes)
+                let size = text.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
                 
                 drawOffset.x = -size.width * anchor.x
                 drawOffset.y = -size.height * anchor.y
@@ -189,13 +200,13 @@ open class ChartUtils
             drawOffset.x += point.x
             drawOffset.y += point.y
             
-            (text as NSString).draw(at: drawOffset, withAttributes: attributes)
+            (text as NSString).draw(at: drawOffset, withAttributes: convertToOptionalNSAttributedStringKeyDictionary(attributes))
         }
         
         NSUIGraphicsPopContext()
     }
     
-    internal class func drawMultilineText(context: CGContext, text: String, knownTextSize: CGSize, point: CGPoint, attributes: [NSAttributedStringKey : Any]?, constrainedToSize: CGSize, anchor: CGPoint, angleRadians: CGFloat)
+    internal class func drawMultilineText(context: CGContext, text: String, knownTextSize: CGSize, point: CGPoint, attributes: [String : AnyObject]?, constrainedToSize: CGSize, anchor: CGPoint, angleRadians: CGFloat)
     {
         var rect = CGRect(origin: CGPoint(), size: knownTextSize)
         
@@ -222,7 +233,7 @@ open class ChartUtils
             context.translateBy(x: translate.x, y: translate.y)
             context.rotate(by: angleRadians)
             
-            (text as NSString).draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+            (text as NSString).draw(with: rect, options: .usesLineFragmentOrigin, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes), context: nil)
             
             context.restoreGState()
         }
@@ -237,15 +248,15 @@ open class ChartUtils
             rect.origin.x += point.x
             rect.origin.y += point.y
             
-            (text as NSString).draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+            (text as NSString).draw(with: rect, options: .usesLineFragmentOrigin, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes), context: nil)
         }
         
         NSUIGraphicsPopContext()
     }
     
-    internal class func drawMultilineText(context: CGContext, text: String, point: CGPoint, attributes: [NSAttributedStringKey : Any]?, constrainedToSize: CGSize, anchor: CGPoint, angleRadians: CGFloat)
+    internal class func drawMultilineText(context: CGContext, text: String, point: CGPoint, attributes: [String : AnyObject]?, constrainedToSize: CGSize, anchor: CGPoint, angleRadians: CGFloat)
     {
-        let rect = text.boundingRect(with: constrainedToSize, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+        let rect = text.boundingRect(with: constrainedToSize, options: .usesLineFragmentOrigin, attributes: convertToOptionalNSAttributedStringKeyDictionary(attributes), context: nil)
         drawMultilineText(context: context, text: text, knownTextSize: rect.size, point: point, attributes: attributes, constrainedToSize: constrainedToSize, anchor: anchor, angleRadians: angleRadians)
     }
     
@@ -354,4 +365,10 @@ open class ChartUtils
         }
         return newArray
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

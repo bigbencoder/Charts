@@ -39,4 +39,11 @@ public protocol IBarChartDataSet: IBarLineScatterCandleBubbleChartDataSet
     
     /// array of labels used to describe the different values of the stacked bars
     var stackLabels: [String] { get set }
+	
+
+	/// determines whether we want the minimum bar height to equal the bar width (results in "circle" bar when rounded corners are used
+	var minimumHeightEqualsBarWidth: Bool { get set }
+	
+	/// if non-nil, this will be the minimum height of a non-zero bar
+	var minimumBarHeight: CGFloat { get set }
 }

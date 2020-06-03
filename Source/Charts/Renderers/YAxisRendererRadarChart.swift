@@ -20,7 +20,7 @@ open class YAxisRendererRadarChart: YAxisRenderer
 {
     fileprivate weak var chart: RadarChartView?
     
-    @objc public init(viewPortHandler: ViewPortHandler?, yAxis: YAxis?, chart: RadarChartView?)
+    public init(viewPortHandler: ViewPortHandler?, yAxis: YAxis?, chart: RadarChartView?)
     {
         super.init(viewPortHandler: viewPortHandler, yAxis: yAxis, transformer: nil)
         
@@ -196,8 +196,8 @@ open class YAxisRendererRadarChart: YAxisRenderer
                 point: CGPoint(x: p.x + 10.0, y: p.y - labelLineHeight),
                 align: .left,
                 attributes: [
-                    NSAttributedStringKey.font: labelFont,
-                    NSAttributedStringKey.foregroundColor: labelTextColor
+                    convertFromNSAttributedStringKey(NSAttributedString.Key.font): labelFont,
+                    convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): labelTextColor
                 ])
         }
     }
@@ -271,4 +271,9 @@ open class YAxisRendererRadarChart: YAxisRenderer
         
         context.restoreGState()
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
 }

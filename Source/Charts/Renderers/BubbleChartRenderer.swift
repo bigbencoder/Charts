@@ -19,9 +19,9 @@ import CoreGraphics
 
 open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
 {
-    @objc open weak var dataProvider: BubbleChartDataProvider?
+    open weak var dataProvider: BubbleChartDataProvider?
     
-    @objc public init(dataProvider: BubbleChartDataProvider?, animator: Animator?, viewPortHandler: ViewPortHandler?)
+    public init(dataProvider: BubbleChartDataProvider?, animator: Animator?, viewPortHandler: ViewPortHandler?)
     {
         super.init(animator: animator, viewPortHandler: viewPortHandler)
         
@@ -60,7 +60,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
     fileprivate var _pointBuffer = CGPoint()
     fileprivate var _sizeBuffer = [CGPoint](repeating: CGPoint(), count: 2)
     
-    @objc open func drawDataSet(context: CGContext, dataSet: IBubbleChartDataSet)
+    open func drawDataSet(context: CGContext, dataSet: IBubbleChartDataSet)
     {
         guard
             let dataProvider = dataProvider,
@@ -213,7 +213,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                                 x: pt.x,
                                 y: pt.y - (0.5 * lineHeight)),
                             align: .center,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor])
+                            attributes: [convertFromNSAttributedStringKey(NSAttributedString.Key.font): valueFont, convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): valueTextColor])
                     }
                     
                     if let icon = e.icon, dataSet.isDrawIconsEnabled
@@ -323,4 +323,9 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
         
         context.restoreGState()
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
 }
