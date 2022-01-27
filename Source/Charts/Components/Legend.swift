@@ -259,10 +259,8 @@ open class Legend: ComponentBase
                 maxFormSize = formSize
             }
             
-            guard let label = entry.label
-                else { continue }
-            
-            let size = (label as NSString!).size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font): font]))
+			guard let label = entry.label, let size = (label as? NSString)?.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font): font]))
+				else { continue }
             
             if size.width > maxW
             {
@@ -349,10 +347,8 @@ open class Legend: ComponentBase
                     width += formSize
                 }
                 
-                if label != nil
+				if label != nil, let size = (label as? NSString)?.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font): labelFont]))
                 {
-                    let size = (label as NSString!).size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font): labelFont]))
-                    
                     if drawingForm && !wasStacked
                     {
                         width += formToTextSpace
@@ -438,7 +434,7 @@ open class Legend: ComponentBase
                 // grouped forms have null labels
                 if label != nil
                 {
-                    calculatedLabelSizes[i] = (label as NSString!).size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary(labelAttrs))
+                    calculatedLabelSizes[i] = (label as? NSString)!.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary(labelAttrs))
                     requiredWidth += drawingForm ? formToTextSpace + formSize : 0.0
                     requiredWidth += calculatedLabelSizes[i].width
                 }
